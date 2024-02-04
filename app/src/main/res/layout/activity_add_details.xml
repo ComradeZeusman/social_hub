@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+    android:orientation="vertical"
+    tools:context=".Add_details">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:ignore="ExtraText">
+
+        <ImageView
+            android:id="@+id/clickableImage"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:src="@drawable/icon_account_circle"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"
+            android:onClick="onImageClick"/>
+
+
+        <!-- Profile Picture Upload -->
+
+        <!-- Registration Number -->
+        <EditText
+            android:id="@+id/editTextRegistrationNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/registration_number"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"/>
+
+        <!-- Year of Study -->
+        <EditText
+            android:id="@+id/editTextYearOfStudy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/year_of_study"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"/>
+
+        <!-- Semester -->
+        <EditText
+            android:id="@+id/editTextSemester"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/semester"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/update_profile"
+            android:id="@+id/update" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
