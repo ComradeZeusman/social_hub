@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Class_project</string>
+    <string name="app_name">Unilia Social Hub</string>
     <string name="todo">TODO</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="already_have_an_account">Already have an account?</string>
@@ -10,4 +10,8 @@
     <string name="year_of_study">Year of Study</string>
     <string name="semester">Semester</string>
     <string name="update_profile">Update Profile</string>
+    <string name="profile_icon">Profile Icon</string>
+    <string name="user_details">User Details</string>
+    <string name="logout">Logout</string>
+    <string name="welcome_to_social_hub_by_madalo_perenje">Welcome to Social Hub by Madalo Perenje</string>
 </resources>

@@ -79,10 +79,13 @@ public class Add_details extends AppCompatActivity {
             if (reg.isEmpty() || year.isEmpty() || semester.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Please fill in all details", Toast.LENGTH_SHORT).show();
             } else {
+                //retrieve the user's email
+                String email = user.getEmail();
                 // Update firstprofile to true
                 userRef.child("firstprofile").setValue(true);
 
                 // Save user details
+                userRef.child("email").setValue(email);
                 userRef.child("registrationNumber").setValue(reg);
                 userRef.child("yearOfStudy").setValue(year);
                 userRef.child("semester").setValue(semester);

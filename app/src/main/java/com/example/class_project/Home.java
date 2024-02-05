@@ -4,11 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +39,8 @@ public class Home extends AppCompatActivity {
     FirebaseUser user;
     DatabaseReference userRef;
 
+    ImageView imageView;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +50,9 @@ public class Home extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         button = findViewById(R.id.Logout);
         textView = findViewById(R.id.User_details);
+        imageView = findViewById(R.id.profileIcon);
 
         user = auth.getCurrentUser();
-
 
 
         if (user == null) {
@@ -65,8 +78,21 @@ public class Home extends AppCompatActivity {
                             finish();
                         } else {
                             // Continue to Home.java
+                            //display the registered user details
+                            assert userData != null;
+                            String picture = userData.getImageUri();
                             String name = user.getDisplayName();
                             textView.setText("Welcome " + name);
+
+                            // Load the profile picture
+                            //convert the image uri to a URL
+                            Uri imageUri = Uri.parse(picture);
+                            //load the image using Glide
+                            Glide.with(Home.this).load(imageUri).into(imageView);
+
+
+                            //retrieve the user details from the Firebase Realtime Database
+
                         }
                     }
                 }
@@ -80,10 +106,15 @@ public class Home extends AppCompatActivity {
         }
 
         button.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
+           // Logout the user
+            auth.signOut();
+            // Load the main activity
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
+
+            Toast.makeText(Home.this, "Logged out", Toast.LENGTH_SHORT).show();
         });
     }
+
 }
