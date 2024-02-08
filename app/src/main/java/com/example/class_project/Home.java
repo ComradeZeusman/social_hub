@@ -1,14 +1,18 @@
 package com.example.class_project;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.class_project.User;
 public class Home extends AppCompatActivity {
 
+
     FirebaseAuth auth;
     Button button;
     TextView textView;
@@ -46,6 +51,12 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.login_background));
+            actionBar.hide();
+        }
 
         auth = FirebaseAuth.getInstance();
         button = findViewById(R.id.Logout);
@@ -88,10 +99,30 @@ public class Home extends AppCompatActivity {
                             //convert the image uri to a URL
                             Uri imageUri = Uri.parse(picture);
                             //load the image using Glide
-                            Glide.with(Home.this).load(imageUri).into(imageView);
+                            if (imageUri != null) {
+                                Glide.with(Home.this).load(imageUri).into(imageView);
+                                    Toast.makeText(Home.this, "Image found", Toast.LENGTH_SHORT).show();
+                            } else {
+                                //show error message
+                                Toast.makeText(Home.this, "Error: Image not found", Toast.LENGTH_SHORT).show();
+                            }
 
 
-                            //retrieve the user details from the Firebase Realtime Database
+
+                            //wait for 5 seconds then start new intent
+                            new CountDownTimer(5000, 1000) {
+                                public void onTick(long millisUntilFinished) {
+                                    // Do nothing on tick
+                                }
+
+                                public void onFinish() {
+                                    // Load the MainActivity2 after 5 seconds
+                                    Intent intent = new Intent(getApplicationContext(), chatinterface.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }.start();
+
 
                         }
                     }
@@ -117,4 +148,27 @@ public class Home extends AppCompatActivity {
         });
     }
 
+   //create the menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home_menu, menu);
+        return true;
+    }
+
+    //handle the menu item click
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.newchat){
+            // Load the profile activity
+            Toast.makeText(this, "New chat", Toast.LENGTH_SHORT).show();
+        }
+        if (item.getItemId() == R.id.Logout){
+            // Load the about activity
+            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
+    }
 }

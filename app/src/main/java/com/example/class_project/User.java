@@ -67,4 +67,6 @@ public class User {
     public void setYearOfStudy(String yearOfStudy) {
         this.yearOfStudy = yearOfStudy;
     }
+
+
 }

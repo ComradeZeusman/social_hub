@@ -1,6 +1,7 @@
 package com.example.class_project;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -30,23 +31,22 @@ public class MainActivity extends AppCompatActivity {
 
     TextView textview;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), Home.class);
-            startActivity(intent);
-            finish();
-        }
-    }
+
+
 
     @SuppressLint({"WrongViewCast", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.login_background));
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.hide();
+        }
+
 
         mAuth = FirebaseAuth.getInstance();
         // initialize the variables
@@ -88,15 +88,22 @@ public class MainActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                       Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                       //check if email is verified
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    assert user != null;
+                                    if (user.isEmailVerified()) {
+                                        // Sign in success, update UI with the signed-in user's information
                                         Intent intent = new Intent(getApplicationContext(), Home.class);
                                         startActivity(intent);
                                         finish();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
                                     // If sign in fails, display a message to the user.
 
-                                    Toast.makeText(MainActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
+                                    //show error message
+                                    Toast.makeText(MainActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
                                 }
                             }
@@ -106,4 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onForgotPasswordClick(View view) {
+Intent intent = new Intent(getApplicationContext(), Forgotpassword.class);
+        startActivity(intent);
+        finish();
+
+    }
 }

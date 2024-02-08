@@ -14,4 +14,6 @@
     <string name="user_details">User Details</string>
     <string name="logout">Logout</string>
     <string name="welcome_to_social_hub_by_madalo_perenje">Welcome to Social Hub by Madalo Perenje</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="reset_password">Reset Password</string>
 </resources>

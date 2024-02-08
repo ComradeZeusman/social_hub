@@ -1,6 +1,7 @@
 package com.example.class_project;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -30,22 +31,18 @@ public class Register extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textview;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            Intent intent = new Intent(getApplicationContext(), Home.class);
-            startActivity(intent);
-            finish();
-        }
-    }
-
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.login_background));
+            actionBar.hide();
+        }
+
 
         mAuth = FirebaseAuth.getInstance();
         username = findViewById(R.id.username_input);
@@ -154,14 +151,27 @@ public class Register extends AppCompatActivity {
 
                                     String userId = user.getUid();
 
-                                    User newUser = new User(Username, Email, false);
+                                    //save display name and firstprofile to firebase database
+                                    User newUser = new User("", Username, Email, false);
+
 
                                     userRef.child(userId).setValue(newUser);
 
                                     Toast.makeText(Register.this, "Registration Successful", Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
+
+                                    //send email of successful registration
+                                    user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(Register.this, "Verification email sent", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
                                 } else {
-                                    Toast.makeText(Register.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                    //show error message
+                                    Toast.makeText(Register.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
                                 }
                             }

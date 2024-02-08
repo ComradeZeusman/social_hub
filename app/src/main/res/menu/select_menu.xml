@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/back"
+        android:icon="@drawable/baseline_arrow_back_24"
+        android:title="New Chat"
+        android:gravity="start"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/actions"
+        android:title="Actions"
+        app:showAsAction="never"
+        >
+
+        <menu>
+            <item android:id="@+id/refresh"
+                android:title="refresh"
+                app:showAsAction="ifRoom"/>
+
+        </menu>
+    </item>
+</menu>

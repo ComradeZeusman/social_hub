@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Loading_screen extends AppCompatActivity {
@@ -17,6 +18,15 @@ public class Loading_screen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading_screen);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.login_background));
+            actionBar.setDisplayShowTitleEnabled(false);
+            //hide action bar
+            actionBar.hide();
+        }
+
 
         progressBar = findViewById(R.id.progressBar);
 
