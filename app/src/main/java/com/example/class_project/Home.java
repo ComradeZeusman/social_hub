@@ -171,4 +171,7 @@ public class Home extends AppCompatActivity {
 
         return false;
     }
+
+    public void chat(View view) {
+    }
 }

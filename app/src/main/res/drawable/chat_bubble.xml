@@ -1,0 +1,9 @@
+<!-- chat_bubble.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="-3dp" android:right="-3dp" android:left="-3dp" android:bottom="-3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E8E8"/> <!-- Background color of the chat bubble -->
+            <corners android:radius="16dp"/> <!-- Adjust the corner radius as needed -->
+        </shape>
+    </item>
+</layer-list>

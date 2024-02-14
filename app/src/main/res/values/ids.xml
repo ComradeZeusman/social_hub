@@ -2,4 +2,5 @@
 <resources>
     <item name="recyclerView" type="id" />
     <item name="yearOfStudyTextView" type="id" />
+    <item name="recyclerViewMessages" type="id" />
 </resources>

@@ -1,11 +1,15 @@
 package com.example.class_project;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.class_project.UserDetails;
@@ -31,6 +35,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserDetails user = userList.get(position);
         holder.bind(user);
+
+        // Add onClickListeners for the user items
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserDetails userDetails = userList.get(position);
+
+                Intent intent = new Intent(v.getContext(), chatting.class);
+                intent.putExtra("username", userDetails.getUsername());
+                intent.putExtra("email", userDetails.getEmail());
+                intent.putExtra("yearOfStudy", userDetails.getYearOfStudy());
+               intent.putExtra("uid", userDetails.getUid());
+
+                v.getContext().startActivity(intent);
+            }
+
+        });
     }
 
     @Override
@@ -58,5 +79,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             yearOfStudyTextView.setText(user.getYearOfStudy());
             // Add other bindings as needed
         }
+        //setOnClickListeners for the user items
+
+
     }
 }

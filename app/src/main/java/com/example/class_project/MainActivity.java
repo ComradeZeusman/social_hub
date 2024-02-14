@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
 
+    FirebaseUser user;
+
     TextView textview;
 
 
@@ -39,6 +41,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+// Check if the user is already logged in
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            //check if email is verified
+            if (user.isEmailVerified()) {
+            Intent intent = new Intent(getApplicationContext(), Home.class);
+            startActivity(intent);
+            finish();
+} else {
+                Toast.makeText(MainActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
+            }
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
