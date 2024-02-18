@@ -2,6 +2,7 @@ package com.example.class_project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -65,18 +67,28 @@ public class chatinterface extends AppCompatActivity implements ChatAdapter.OnCh
     }
 
     private void loadChats() {
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
 
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        messagesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<User> userList = new ArrayList<>();
-                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    User userDetails = userSnapshot.getValue(User.class);
-                    if (userDetails != null) {
-                        userList.add(userDetails);
+                String currentUserId = user.getUid();
+
+                for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
+                    Message message = messageSnapshot.getValue(Message.class);
+
+                    if (message != null) {
+                        // Check if the logged-in user is either the sender or receiver
+                        if (currentUserId.equals(message.getSenderUid()) || currentUserId.equals(message.getReceiverUid())) {
+                            // Add the corresponding user to the list
+                            String chatUserId = currentUserId.equals(message.getSenderUid()) ? message.getReceiverUid() : message.getSenderUid();
+                            addUserToChatList(chatUserId, userList);
+                        }
                     }
                 }
+
+                // Update the RecyclerView with the filtered user list
                 updateChatList(userList);
             }
 
@@ -87,20 +99,101 @@ public class chatinterface extends AppCompatActivity implements ChatAdapter.OnCh
         });
     }
 
+    private void addUserToChatList(String userId, List<User> userList) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User userDetails = snapshot.getValue(User.class);
+
+                if (userDetails != null) {
+                    userList.add(userDetails);
+                    // Update the RecyclerView when a user is added to the list
+                    updateChatList(userList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(chatinterface.this, "Failed to load user details", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void updateChatList(List<User> userList) {
         chatAdapter = new ChatAdapter(userList, this);
         recyclerView.setAdapter(chatAdapter);
     }
-
     @Override
     public void onChatItemClick(User chat) {
-        Intent intent = new Intent(getApplicationContext(), chatting.class);
-        intent.putExtra("username", chat.getUsername());
-        intent.putExtra("email", chat.getEmail());
-        intent.putExtra("yearOfStudy", chat.getYearOfStudy());
-        startActivity(intent);
-    }
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
+        String currentUserId = user.getUid();
+        String chatUserId = chat.getUid();
 
+        if (chatUserId == null) {
+            Log.e("ChatInterface", "Chat user ID is null");
+            Toast.makeText(chatinterface.this, "Chat user ID is null", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.e("ChatInterface", "Current user ID: " + currentUserId);
+        Log.e("ChatInterface", "Chat user ID: " + chatUserId);
+
+
+        Query querySender = messagesRef.orderByChild("senderUid").equalTo(currentUserId);
+        Query queryReceiver = messagesRef.orderByChild("receiverUid").equalTo(currentUserId);
+
+        querySender.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                    Message message = messageSnapshot.getValue(Message.class);
+                    if (message != null && message.getReceiverUid().equals(chatUserId)) {
+                        int conversationId = message.getConversationId();
+                        // Now you can use the conversationId as needed
+                        Toast.makeText(chatinterface.this, "Conversation ID: " + conversationId, Toast.LENGTH_SHORT).show();
+                        //start new intent and pass conversationId
+                        Intent intent = new Intent(getApplicationContext(), conversation.class);
+                        intent.putExtra("conversationId", conversationId);
+                        intent.putExtra("SenderUid", currentUserId);
+                        intent.putExtra("ReceiverUid", chatUserId);
+                        startActivity(intent);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors.
+            }
+        });
+
+        queryReceiver.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                    Message message = messageSnapshot.getValue(Message.class);
+                    if (message != null && message.getSenderUid().equals(chatUserId)) {
+                        int conversationId = message.getConversationId();
+                        // Now you can use the conversationId as needed
+                        Toast.makeText(chatinterface.this, "Conversation ID: " + conversationId, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), conversation.class);
+                        intent.putExtra("conversationId", conversationId);
+                        intent.putExtra("SenderUid", currentUserId);
+                        intent.putExtra("ReceiverUid", chatUserId);
+                        startActivity(intent);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors.
+            }
+        });
+    }
     // Create the options menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

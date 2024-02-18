@@ -27,6 +27,9 @@
         android:theme="@style/Theme.Class_project"
         tools:targetApi="31">
         <activity
+            android:name=".conversation"
+            android:exported="false" />
+        <activity
             android:name=".chatting"
             android:exported="false" />
         <activity

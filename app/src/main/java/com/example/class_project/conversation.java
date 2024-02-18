@@ -6,11 +6,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class chatting extends AppCompatActivity {
+public class conversation extends AppCompatActivity {
 
     FirebaseUser user;
     DatabaseReference userRef, messagesRef;
@@ -37,11 +38,15 @@ public class chatting extends AppCompatActivity {
     List<Message> messageList;
     MessageAdapter messageAdapter;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chatting);
+        setContentView(R.layout.activity_conversation);
+
+        if(user != null){
+            userRef.child("status").setValue("online");
+        }
+
 
         send = findViewById(R.id.buttonSendMessage);
         message = findViewById(R.id.editTextMessageInput);
@@ -53,26 +58,18 @@ public class chatting extends AppCompatActivity {
         messagesRef = FirebaseDatabase.getInstance().getReference("messages");
 
 
-
-        if (user != null) {
-            userRef.child("status").setValue("online");
-        }
-
-
-        //set the title of the toolbar
-
-
-        // Get the intent that started this activity and extract the string
         Intent intent = getIntent();
-        String username = intent.getStringExtra("username");
-        String email = intent.getStringExtra("email");
-        String yearOfStudy = intent.getStringExtra("yearOfStudy");
-        String receiverUid = intent.getStringExtra("uid");
+        String conversationId = intent.getStringExtra("conversationId");
+        String SenderUid = intent.getStringExtra("SenderUid");
+        String ReceiverUid = intent.getStringExtra("ReceiverUid");
+
+        Log.d("conversation", "conversationId in chat: " + conversationId);
+        Log.d("conversation", "SenderUid in chat: " + SenderUid);
+        Log.d("conversation", "ReceiverUid in chat: " + ReceiverUid);
 
         // Set the title of the toolbar to the username of the
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(username);
 
         // RecyclerView setup
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
@@ -83,45 +80,39 @@ public class chatting extends AppCompatActivity {
         recyclerViewMessages.setLayoutManager(layoutManager);
         recyclerViewMessages.setAdapter(messageAdapter);
 
-        // Set an onClickListener for the send button
-        send.setOnClickListener(v -> {
-            String messageText = message.getText().toString();
-            // randomly generated conversation id
-            int conversationId = (int) (Math.random() * 1000000);
-            if (!messageText.isEmpty()) {
-                // Create a new message object with senderUid, receiverUid, and messageText
-                Message newMessage = new Message(user.getUid(), receiverUid, messageText);
-                newMessage.setConversationId(conversationId);
+        // Load messages
+loadMessages(conversationId, SenderUid, ReceiverUid);
 
-                // Create a composite key by concatenating senderUid and receiverUid
-                String compositeKey = user.getUid() + "_" + receiverUid;
-                newMessage.setCompositeKey(compositeKey);
 
-                // Push the new message to the database
-                DatabaseReference newMessageRef = messagesRef.push();
-                newMessageRef.setValue(newMessage);
 
-                // Clear the message input
-                message.setText("");
-            }
-        });
-        // Listen for changes in the database and update the RecyclerView accordingly
+    }
+
+
+    private void loadMessages(String conversationId, String SenderUid, String ReceiverUid) {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
+
         messagesRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                messageList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Message message = snapshot.getValue(Message.class);
-                    if (message != null) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Message> messageList = new ArrayList<>();
+                String currentUserId = user.getUid();
+
+                for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
+                    Message message = messageSnapshot.getValue(Message.class);
+                    if (String.valueOf(message.getConversationId()).equals(conversationId) && (String.valueOf(message.getSenderUid()).equals(SenderUid) || String.valueOf(message.getReceiverUid()).equals(ReceiverUid))) {
                         messageList.add(message);
                     }
                 }
-                messageAdapter.notifyDataSetChanged();
+
+                messageAdapter.setMessageList(messageList);
+
+                //toast conversationId
+                Toast.makeText(conversation.this, "conversationId: " + conversationId, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle errors if necessary
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
             }
         });
     }

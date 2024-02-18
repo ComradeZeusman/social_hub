@@ -72,6 +72,8 @@ public class Register extends AppCompatActivity {
             private String email;
             private boolean firstprofile;
 
+            private String uid;
+
             public User(String username, String email, boolean b) {
                 // Default constructor required for calls to DataSnapshot.getValue(User.class)
             }
@@ -87,6 +89,10 @@ public class Register extends AppCompatActivity {
                 return picture;
             }
 
+            public String getUid() {
+                return uid;
+            }
+
             public String getUsername() {
                 return username;
             }
@@ -97,6 +103,10 @@ public class Register extends AppCompatActivity {
 
             public boolean isFirstprofile() {
                 return firstprofile;
+            }
+
+            public void setUid(String uid) {
+                this.uid = uid;
             }
         }
 
@@ -151,8 +161,11 @@ public class Register extends AppCompatActivity {
 
                                     String userId = user.getUid();
 
-                                    //save display name and firstprofile to firebase database
+//save display name, uid and firstprofile to firebase database
                                     User newUser = new User("", Username, Email, false);
+                                    newUser.setUid(userId);
+
+                                    userRef.child(userId).setValue(newUser);
 
 
                                     userRef.child(userId).setValue(newUser);

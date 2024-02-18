@@ -14,7 +14,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+
+public class ConversationAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
     private List<Message> messageList;
     private Context context;
@@ -26,7 +27,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         notifyDataSetChanged();
     }
 
-    public MessageAdapter(List<Message> messageList, Context context) {
+    public ConversationAdapter(List<Message> messageList, Context context) {
         this.messageList = messageList;
         this.context = context;
         this.auth = FirebaseAuth.getInstance();
@@ -34,13 +35,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @NonNull
     @Override
-    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessageAdapter.MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_message, parent, false);
-        return new MessageViewHolder(view);
+        return new MessageAdapter.MessageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MessageAdapter.MessageViewHolder holder, int position) {
         Message message = messageList.get(position);
 
         // Check if the current user is either the sender or receiver
@@ -62,21 +63,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        private TextView senderTextView;
-        private TextView messageTextView;
+        private TextView messageText;
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            senderTextView = itemView.findViewById(R.id.senderTextView);
-            messageTextView = itemView.findViewById(R.id.messageTextView);
+            messageText = itemView.findViewById(R.id.messageTextView);
         }
 
         public void bind(Message message) {
-            // Bind the message data to the view
-            senderTextView.setText("Sender: " + message.getSenderUid());
-            messageTextView.setText(message.getMessageText());
+            messageText.setText(message.getMessage());
         }
-
-
     }
 }

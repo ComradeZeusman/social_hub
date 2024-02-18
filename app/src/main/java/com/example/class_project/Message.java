@@ -6,15 +6,23 @@ public class Message {
 
     private String receiverUid;
 
+    private int conversationId;
+
+    private String compositeKey;
+
+
     // Required default constructor for Firebase
     public Message() {
     }
+
+
 
     // Constructor with parameters
     public Message(String senderUid, String receiverUid,String messageText) {
         this.senderUid = senderUid;
         this.messageText = messageText;
         this.receiverUid = receiverUid;
+        this.conversationId = conversationId;
     }
 
     // Getters and setters
@@ -26,11 +34,23 @@ public class Message {
         return receiverUid;
     }
 
+    public String getCompositeKey() {
+        return compositeKey;
+    }
+
+    public int getConversationId() {
+        return conversationId;
+    }
+
     public void setSenderUid(String senderUid) {
         this.senderUid = senderUid;
     }
 
     public String getMessageText() {
+        return messageText;
+    }
+
+    public String getMessage() {
         return messageText;
     }
 
@@ -40,5 +60,13 @@ public class Message {
 
     public void setReceiverUid(String receiverUid) {
         this.receiverUid = receiverUid;
+    }
+
+    public void setConversationId(int conversationId) {
+        this.conversationId = conversationId;
+    }
+
+    public void setCompositeKey(String compositeKey) {
+        this.compositeKey = compositeKey;
     }
 }
