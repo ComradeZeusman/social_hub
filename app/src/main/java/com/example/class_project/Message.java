@@ -18,11 +18,12 @@ public class Message {
 
 
     // Constructor with parameters
-    public Message(String senderUid, String receiverUid,String messageText) {
+    public Message(String senderUid, String receiverUid,String messageText, int conversationId) {
         this.senderUid = senderUid;
         this.messageText = messageText;
         this.receiverUid = receiverUid;
         this.conversationId = conversationId;
+
     }
 
     // Getters and setters

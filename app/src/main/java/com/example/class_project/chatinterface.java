@@ -152,9 +152,11 @@ public class chatinterface extends AppCompatActivity implements ChatAdapter.OnCh
                     Message message = messageSnapshot.getValue(Message.class);
                     if (message != null && message.getReceiverUid().equals(chatUserId)) {
                         int conversationId = message.getConversationId();
+                        Log.d("ChatInterface", "Conversation ID before intent: " + conversationId);
                         // Now you can use the conversationId as needed
                         Toast.makeText(chatinterface.this, "Conversation ID: " + conversationId, Toast.LENGTH_SHORT).show();
                         //start new intent and pass conversationId
+                        Log.d("ChatInterface", "Conversation ID before intent: " + conversationId);
                         Intent intent = new Intent(getApplicationContext(), conversation.class);
                         intent.putExtra("conversationId", conversationId);
                         intent.putExtra("SenderUid", currentUserId);

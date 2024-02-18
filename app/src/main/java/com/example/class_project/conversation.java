@@ -43,10 +43,9 @@ public class conversation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
 
-        if(user != null){
+        if (user != null) {
             userRef.child("status").setValue("online");
         }
-
 
         send = findViewById(R.id.buttonSendMessage);
         message = findViewById(R.id.editTextMessageInput);
@@ -57,15 +56,15 @@ public class conversation extends AppCompatActivity {
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
         messagesRef = FirebaseDatabase.getInstance().getReference("messages");
 
-
         Intent intent = getIntent();
-        String conversationId = intent.getStringExtra("conversationId");
-        String SenderUid = intent.getStringExtra("SenderUid");
-        String ReceiverUid = intent.getStringExtra("ReceiverUid");
+        int conversationId = intent.getIntExtra("conversationId", -1); // -1 is the default value if the key is not found
+        String senderUid = intent.getStringExtra("SenderUid");
+        String receiverUid = intent.getStringExtra("ReceiverUid");
 
         Log.d("conversation", "conversationId in chat: " + conversationId);
-        Log.d("conversation", "SenderUid in chat: " + SenderUid);
-        Log.d("conversation", "ReceiverUid in chat: " + ReceiverUid);
+        Toast.makeText(conversation.this, "conversationId: " + conversationId, Toast.LENGTH_SHORT).show();
+        Log.d("conversation", "SenderUid in chat: " + senderUid);
+        Log.d("conversation", "ReceiverUid in chat: " + receiverUid);
 
         // Set the title of the toolbar to the username of the
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -81,26 +80,30 @@ public class conversation extends AppCompatActivity {
         recyclerViewMessages.setAdapter(messageAdapter);
 
         // Load messages
-loadMessages(conversationId, SenderUid, ReceiverUid);
-
-
-
+        loadMessages(conversationId, senderUid, receiverUid);
     }
 
-
-    private void loadMessages(String conversationId, String SenderUid, String ReceiverUid) {
+    private void loadMessages(int conversationId, String senderUid, String receiverUid) {
         DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
 
         messagesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Message> messageList = new ArrayList<>();
-                String currentUserId = user.getUid();
 
                 for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
                     Message message = messageSnapshot.getValue(Message.class);
-                    if (String.valueOf(message.getConversationId()).equals(conversationId) && (String.valueOf(message.getSenderUid()).equals(SenderUid) || String.valueOf(message.getReceiverUid()).equals(ReceiverUid))) {
+                    if (message != null && message.getConversationId() == conversationId
+                            && ((message.getSenderUid().equals(senderUid) && message.getReceiverUid().equals(receiverUid))
+                            || (message.getSenderUid().equals(receiverUid) && message.getReceiverUid().equals(senderUid)))) {
                         messageList.add(message);
+                    } else {
+                        Log.d("Conversation", "Message not added: " + message);
+                        if (message != null) {
+                            Log.d("Conversation", "Message conversationId: " + message.getConversationId());
+                            Log.d("Conversation", "Message senderUid: " + message.getSenderUid());
+                            Log.d("Conversation", "Message receiverUid: " + message.getReceiverUid());
+                        }
                     }
                 }
 

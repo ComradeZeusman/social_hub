@@ -90,7 +90,7 @@ public class chatting extends AppCompatActivity {
             int conversationId = (int) (Math.random() * 1000000);
             if (!messageText.isEmpty()) {
                 // Create a new message object with senderUid, receiverUid, and messageText
-                Message newMessage = new Message(user.getUid(), receiverUid, messageText);
+                Message newMessage = new Message(user.getUid(), receiverUid, messageText, conversationId);
                 newMessage.setConversationId(conversationId);
 
                 // Create a composite key by concatenating senderUid and receiverUid
