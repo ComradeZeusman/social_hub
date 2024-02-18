@@ -16,4 +16,11 @@
     <string name="welcome_to_social_hub_by_madalo_perenje">Welcome to Social Hub by Madalo Perenje</string>
     <string name="enter_your_email">Enter your email</string>
     <string name="reset_password">Reset Password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="login">Login</string>
+    <string name="please_login_with_your_information">Please login with your information</string>
+    <string name="or_login_with">or login with</string>
+    <string name="i_forgot_my_passowrd">I forgot my passowrd</string>
+    <string name="click_here_to_register">Click here to register</string>
+    <string name="back">Back</string>
 </resources>
